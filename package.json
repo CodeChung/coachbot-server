@@ -1,5 +1,5 @@
 {
-  "name": "express-boilerplate",
+  "name": "coachbot-server",
   "version": "0.0.1",
   "description": "",
   "main": "src/server.js",
@@ -11,6 +11,9 @@
     "deploy": "git push heroku master"
   },
   "keywords": [],
+  "engines": {
+    "node": "10.15.3"
+  },
   "author": "Harry Chung",
   "license": "MIT",
   "dependencies": {
