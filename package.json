@@ -6,6 +6,7 @@
   "scripts": {
     "test": "mocha --require test/setup.js",
     "dev": "nodemon src/server.js",
+    "migrate": "postgrator --config postgrator-config.js",
     "start": "node src/server.js",
     "predeploy": "npm audit",
     "deploy": "git push heroku master"
@@ -17,16 +18,22 @@
   "author": "Harry Chung",
   "license": "MIT",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^6.2.0",
     "express": "^4.16.4",
     "helmet": "^3.15.0",
-    "morgan": "^1.9.1"
+    "jsonwebtoken": "^8.5.1",
+    "knex": "^0.19.2",
+    "morgan": "^1.9.1",
+    "pg": "^7.12.1",
+    "xss": "^1.0.6"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "mocha": "^5.2.0",
     "nodemon": "^1.18.9",
+    "postgrator-cli": "^3.1.0",
     "supertest": "^3.3.0"
   }
 }
