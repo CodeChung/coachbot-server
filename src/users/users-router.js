@@ -19,7 +19,6 @@ usersRouter
         }
         
         const passwordError = UsersService.validatePassword(password)
-        console.log(passwordError)
         if (passwordError) {
             return res.status(400).json({
                 error: passwordError
@@ -53,7 +52,7 @@ usersRouter
                             .then(user => {
                                 res.status(201)
                                     .location(path.posix.join(req.originalUrl, `/${user.id}`))
-                                    .json(UsersService.serializedUser(user))
+                                    .json(UsersService.serializeUser(user))
                             })
                     })
             })
