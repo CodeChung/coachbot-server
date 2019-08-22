@@ -1,4 +1,10 @@
 const GoalsService = {
+    getGoalById(db, goalId) {
+        return db
+            .from('goals')
+            .select('*')
+            .where('id', goalId)
+    },
     getAllGoals(db, userId) {
         return db
             .from('goals')
@@ -15,8 +21,15 @@ const GoalsService = {
             .insert(goal)
             .into('goals')
             .returning('*')
-            .then(res => console.log('goal', res))
-    } 
+            .then(res => {
+                return this.getAllGoals(db, goal.user_id)
+            })
+    },
+    deleteGoal(db, goalId) {
+        return db('goals')
+            .where('id', goalId)
+            .delete()
+    }
 }
 
 module.exports = GoalsService
