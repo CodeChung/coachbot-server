@@ -1,4 +1,5 @@
 const express = require('express')
+const session = require('express-session')
 const morgan = require('morgan')
 const cors = require('cors')
 const helmet = require('helmet')
@@ -9,6 +10,13 @@ const goalsRouter = require('./goals/goals-router')
 const coachRouter = require('./coach/coach-router')
 
 const app = express()
+
+app.use(session({
+  secret: 'keyboard koala',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }
+}))
 
 app.use(morgan((NODE_ENV === 'production') ? 'tiny' : 'common', {
   skip: () => NODE_ENV === 'test',

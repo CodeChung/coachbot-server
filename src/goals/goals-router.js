@@ -2,6 +2,8 @@ const express = require('express');
 const path = require('path');
 const GoalsService = require('./goals-service');
 const requireAuth = require('../middleware/jwt-auth');
+const dialogflow = require('dialogflow')
+const uuid = require('uuid');
 
 const goalsRouter = express.Router()
 const jsonBodyParser = express.json()
@@ -40,6 +42,16 @@ goalsRouter
                         .json({ error: 'Goal not found' })
                 }
                 res.status(200).json(goal)
+                // // Here we store a dialogflow session for the specific goal
+                // TODO FIX: session doesn't persist between calls 
+                if (!req.session[`session-${goalId}`]) {
+                    const sessionClient = new dialogflow.SessionsClient({
+                        keyFilename: '../../coachbot-f3df93d5ee22.json'
+                    });
+                    const sessionId = uuid.v4();
+                    req.session[`session-${goalId}`] = { sessionClient, sessionId }
+                    // console.log(req.session[`session-${goalId}`], 'SESSSSSSSSION!!!')
+                }
             })
             .catch(next)
     })

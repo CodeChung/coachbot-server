@@ -6,15 +6,16 @@ const uuid = require('uuid');
  * @param {string} projectId The project to be used
  */
 
-async function runSample(projectId = 'coachbot-1566527849836') {
-  console.log('PNIOESFNDJKSNFDJKSNJFSN')
+async function runSample(sessionClient, sessionId) {
+  const projectId = process.env.DIALOGFLOW_PROJECT_ID
+  console.log(projectId, 'PROJECTID!!!!!!')
   // A unique identifier for the given session
-  const sessionId = uuid.v4();
+  // const sessionId = uuid.v4();
  
   // Create a new session
-  const sessionClient = new dialogflow.SessionsClient({
-    keyFilename: '../../coachbot-f3df93d5ee22.json'
-  });
+  // const sessionClient = new dialogflow.SessionsClient({
+  //   keyFilename: '../../coachbot-f3df93d5ee22.json'
+  // });
   const sessionPath = sessionClient.sessionPath(projectId, sessionId);
  
   // The text query request.
@@ -23,7 +24,7 @@ async function runSample(projectId = 'coachbot-1566527849836') {
     queryInput: {
       text: {
         // The query to send to the dialogflow agent
-        text: 'hello',
+        text: 'new goal',
         // The language used by the client (en-US)
         languageCode: 'en-US',
       },
