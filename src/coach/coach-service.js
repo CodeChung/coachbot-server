@@ -1,20 +1,8 @@
-const { Wit, log } =  require('node-wit')
 const config = require('../config')
 const chatUtils = require('./chat-utils')
 
-const client = new Wit({
-    accessToken: config.WIT_TOKEN,
-    logger: new log.Logger(log.DEBUG) // optional
-  });
-  
 
 const CoachService = {
-    wit() {
-        // return client.message('set an alarm tomorrow at 7am');
-
-        return client.message('what are my subgoals?', {})
-
-    },
     name(db, id) {
         return chatUtils.getName(db, id)
             

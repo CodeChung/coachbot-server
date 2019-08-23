@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const CoachService = require('./coach-service');
 const requireAuth = require('../middleware/jwt-auth');
+const runSample = require('../dialogflow/dialogflow')
 
 const coachRouter = express.Router()
 const jsonBodyParser = express.json()
@@ -9,9 +10,10 @@ const jsonBodyParser = express.json()
 coachRouter
     .route('/')
     .all(requireAuth)
-    .get((req, res, next) => {
-        // CoachService.wit()
-        //     .then(msg => res.send(msg))
+    .get(async (req, res, next) => {
+        console.log('RUNNING')
+        runSample()
+        // currently gives name of user
         CoachService.name(req.app.get('db'), req.user.id)
         .then(name => res.send(name))
     })
