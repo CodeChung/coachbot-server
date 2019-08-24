@@ -1,11 +1,12 @@
 const config = require('../config')
+const sendMsgToDialogflow = require('../dialogflow/dialogflow-service')
 const chatUtils = require('./chat-utils')
 
 
 const CoachService = {
-    name(db, id) {
-        return chatUtils.getName(db, id)
-            
+    async sendClientToDialogflow(userId, goalId, msg) {
+        const response = await sendMsgToDialogflow(userId, goalId, msg)
+        return response
     },
     async getNewChat(db, goalId, userId) {
         const name = await chatUtils.getName(db, userId)

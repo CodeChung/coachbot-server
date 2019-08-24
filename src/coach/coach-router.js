@@ -4,7 +4,7 @@ const dialogflow = require('dialogflow')
 const uuid = require('uuid')
 const CoachService = require('./coach-service');
 const requireAuth = require('../middleware/jwt-auth');
-const runSample = require('../dialogflow/dialogflow')
+const goalCache = require('../middleware/session-handler');
 
 const coachRouter = express.Router()
 const jsonBodyParser = express.json()
@@ -12,22 +12,14 @@ const jsonBodyParser = express.json()
 coachRouter
     .route('/:goalId')
     .all(requireAuth)
-    .get(async (req, res, next) => {
+    .post(jsonBodyParser, async (req, res, next) => {
         console.log('RUNNING')
         const { goalId } = req.params
-        const session = req.session[`session-${goalId}`]
-        console.log(req.session)
-
-        // TODO: this should come from sessions itself
-        const sessionClient = new dialogflow.SessionsClient({
-            keyFilename: '../../coachbot-f3df93d5ee22.json'
-        });
-        const sessionId = uuid.v4();
-
-        runSample(sessionClient, sessionId)
+        const { msg } = req.body
+        
         // currently gives name of user
-        CoachService.name(req.app.get('db'), req.user.id)
-        .then(name => res.send(name))
+        CoachService.sendClientToDialogflow(req.user.id, goalId, msg)
+            .then(msg => console.log(msg))
     })
     
     // i want to check if user checked in, i want to check if new user, i want to check how many practices missed, i want to 

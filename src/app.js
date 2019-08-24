@@ -1,8 +1,8 @@
 const express = require('express')
-const session = require('express-session')
 const morgan = require('morgan')
 const cors = require('cors')
 const helmet = require('helmet')
+const goalCache = require('./middleware/session-handler')
 const { NODE_ENV } = require('./config')
 const authRouter = require('./auth/auth-router')
 const usersRouter = require('./users/users-router')
@@ -10,13 +10,6 @@ const goalsRouter = require('./goals/goals-router')
 const coachRouter = require('./coach/coach-router')
 
 const app = express()
-
-app.use(session({
-  secret: 'keyboard koala',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false }
-}))
 
 app.use(morgan((NODE_ENV === 'production') ? 'tiny' : 'common', {
   skip: () => NODE_ENV === 'test',
@@ -28,6 +21,8 @@ app.use('/api/auth', authRouter)
 app.use('/api/users', usersRouter)
 app.use('/api/goals', goalsRouter)
 app.use('/api/coach', coachRouter)
+
+
 
 app.get('/', (req, res) => {
   res.send('Hello, world!')

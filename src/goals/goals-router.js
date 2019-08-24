@@ -1,4 +1,5 @@
 const express = require('express');
+const goalCache = require('../middleware/session-handler');
 const path = require('path');
 const GoalsService = require('./goals-service');
 const requireAuth = require('../middleware/jwt-auth');
@@ -16,6 +17,22 @@ goalsRouter
         GoalsService.getAllGoals(req.app.get('db'), userId)
             .then(goals => {
                 res.status(200).json(goals)
+                // setting up dialogflow clients for each goal!!
+                goals.forEach(goal => {
+                    if (!goalCache.get(`goal-${goal.id}`)) {
+                        const sessionId = uuid.v4();
+ 
+                        // Create a new session
+                        const sessionClient = new dialogflow.SessionsClient({
+                            keyFilename: '../../coachbot-f3df93d5ee22.json'
+                        });
+                        const dialogflowSettings = {
+                            sessionId,
+                            sessionClient
+                        }
+                        goalCache.set(`goal-${goal.id}`, dialogflowSettings, 3600)
+                    }
+                })
             })
             .catch(next)
     })
@@ -44,14 +61,19 @@ goalsRouter
                 res.status(200).json(goal)
                 // // Here we store a dialogflow session for the specific goal
                 // TODO FIX: session doesn't persist between calls 
-                if (!req.session[`session-${goalId}`]) {
-                    const sessionClient = new dialogflow.SessionsClient({
-                        keyFilename: '../../coachbot-f3df93d5ee22.json'
-                    });
-                    const sessionId = uuid.v4();
-                    req.session[`session-${goalId}`] = { sessionClient, sessionId }
-                    // console.log(req.session[`session-${goalId}`], 'SESSSSSSSSION!!!')
-                }
+
+                // console.log(`session-${goalId}`)
+                // console.log(req.session[`session-${goalId}`], 'yoogabba!!!')
+                // console.log('views', req.session.views)
+                // if (!req.session[`session-${goalId}`]) {
+                //     const sessionClient = new dialogflow.SessionsClient({
+                //         keyFilename: '../../coachbot-f3df93d5ee22.json'
+                //     });
+                //     const sessionId = uuid.v4();
+                //     req.session[`session-${goalId}`] = { sessionClient, sessionId }
+                //     console.log(`session-${goalId}`)
+                //     console.log(req.session[`session-${goalId}`], 'yoo!!!')
+                // }
             })
             .catch(next)
     })

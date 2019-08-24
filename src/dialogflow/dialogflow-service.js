@@ -1,4 +1,5 @@
 const dialogflow = require('dialogflow');
+const goalCache = require('../middleware/session-handler');
 const uuid = require('uuid');
  
 /**
@@ -6,16 +7,19 @@ const uuid = require('uuid');
  * @param {string} projectId The project to be used
  */
 
-async function runSample(sessionClient, sessionId) {
+ const intents = {
+
+ }
+
+async function sendMsgToDialogflow(userId, goalId, msg) {
   const projectId = process.env.DIALOGFLOW_PROJECT_ID
   console.log(projectId, 'PROJECTID!!!!!!')
-  // A unique identifier for the given session
-  // const sessionId = uuid.v4();
+
+  const dialogflowCredentials = goalCache.get(`goal-${goalId}`)
+  console.log('credentials', dialogflowCredentials)
+  const sessionClient = dialogflowCredentials.sessionClient
+  const sessionId = dialogflowCredentials.sessionId
  
-  // Create a new session
-  // const sessionClient = new dialogflow.SessionsClient({
-  //   keyFilename: '../../coachbot-f3df93d5ee22.json'
-  // });
   const sessionPath = sessionClient.sessionPath(projectId, sessionId);
  
   // The text query request.
@@ -24,7 +28,7 @@ async function runSample(sessionClient, sessionId) {
     queryInput: {
       text: {
         // The query to send to the dialogflow agent
-        text: 'new goal',
+        text: msg,
         // The language used by the client (en-US)
         languageCode: 'en-US',
       },
@@ -42,6 +46,7 @@ async function runSample(sessionClient, sessionId) {
   } else {
     console.log(`  No intent matched.`);
   }
+  return result.fulfillmentText
 }
 
-module.exports = runSample
+module.exports = sendMsgToDialogflow
