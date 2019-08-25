@@ -7,10 +7,11 @@ const ChatService = {
             .where('date', new Date())
             .then(res => res)
     },
-    async getConversation(db, goalId) {
+    async setupConversation(db, goalId) {
+        // returns id, date, goal_id of current conversation
         const convo = await this.checkTodayConvo(db, goalId)
         if (!convo.length) {
-            db.into('conversations')
+            return db.into('conversations')
                 .insert({
                     date: new Date(),
                     goal_id: goalId
@@ -19,6 +20,14 @@ const ChatService = {
                 .then(res => res[0])
         }
         return convo[0]
+    },
+    async getConversation(db, goalId) {
+        const conversation = await this.setupConversation(db, goalId)
+
+        return db('messages')
+            .where('convo_id', conversation.id)
+            .orderBy('date', 'asc')
+            .then(res => res)
     }
 }
 
