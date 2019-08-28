@@ -23,14 +23,13 @@ function getDialogflowCredentials(goalId) {
 }
 
 async function sendMsgToDialogflow(db, userId, goalId, msg) {
+  debugger
   const isNewGoal = await checkForNewGoal(db, goalId)
   console.log('newGoal', isNewGoal)
 
   if (!isNewGoal) {
     return await newGoalDialog(db, userId, goalId)
   }
-
-  console.log('msggggg', msg)
 
   const { sessionClient, sessionId } = getDialogflowCredentials(goalId)
   

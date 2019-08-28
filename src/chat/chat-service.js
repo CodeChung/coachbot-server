@@ -23,12 +23,24 @@ const ChatService = {
     },
     async getConversation(db, goalId) {
         const conversation = await this.setupConversation(db, goalId)
-
+        
         return db('messages')
             .where('convo_id', conversation.id)
             .orderBy('date', 'asc')
             .then(res => res)
-    }
+    },
+    async saveMsg(db, user_id=0, goal_id, message) {
+        const conversation = await this.setupConversation(db, goal_id)
+        console.log('CONVO_ID', conversation.id, 'USER', user_id, 'GOAL',goal_id, message)
+        return db.into('messages')
+                .insert({
+                    user_id,
+                    message,
+                    convo_id: conversation.id
+                })
+                .returning('*')
+                .then(res => res[0])
+    },
 }
 
 module.exports = ChatService

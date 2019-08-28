@@ -17,10 +17,17 @@ chatRouter
         console.log('RUNNING')
         const { goalId } = req.params
         const { msg } = req.body
-        
-        // currently gives name of user
-        const dialogflowMessage = await sendMsgToDialogflow(req.app.get('db'), req.user.id, goalId, msg)
-        res.status(201).json({ msg: dialogflowMessage })
+        // here we're sending client message to dialogflow and storing both responses in messages table
+        try {
+            const userId = req.user.id
+            const dialogflowMessage = await sendMsgToDialogflow(req.app.get('db'), req.user.id, goalId, msg)
+            
+            await ChatService.saveMsg(req.app.get('db'), userId, goalId, msg)
+            await ChatService.saveMsg(req.app.get('db'), 0, goalId, dialogflowMessage)
+            res.status(201).json({ msg: dialogflowMessage })
+        } catch (error) {
+            res.status(500).json({ error })
+        }
     })
     .get((req, res, next) => {
         const { goalId } = req.params
