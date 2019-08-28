@@ -22,3 +22,5 @@ const LogsService = {
             .orderBy('date','asc')
     }
 }
+
+module.exports = LogsService;
