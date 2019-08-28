@@ -4,3 +4,9 @@ CREATE TABLE conversations (
     goal_id INTEGER
         REFERENCES goals(id) ON DELETE CASCADE NOT NULL
 )
+
+
+SELECT date_trunc('day', date), rating
+    FROM goal_logs
+    WHERE date > now()- interval '1 month' 
+    ORDER BY 1 ASC;
