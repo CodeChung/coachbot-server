@@ -14,7 +14,6 @@ chatRouter
     .route('/:goalId')
     .all(requireAuth)
     .post(jsonBodyParser, async (req, res, next) => {
-        console.log('RUNNING')
         const { goalId } = req.params
         const { msg } = req.body
         // here we're sending client message to dialogflow and storing both responses in messages table

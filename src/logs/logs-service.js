@@ -4,17 +4,26 @@ const LogsService = {
         return Boolean(this.getTodaysLog(knex, goalId).length)
     },
     getTodaysLog(knex, goalId) {
+        let currentDate = new Date()
+        currentDate.setUTCHours(0,0,0,0)
+        const date = currentDate.toISOString()
+        
         return knex('goal_logs')
             .where('goal_id', goalId)
-            .where('date', new Date())
+            .where('date', '>=', date)
             .then(res => res)
     },
-    postLog(knex, log) {
-        return knex
-            .insert(log)
+    createLog(knex, goalId) {
+        return knex('goal_logs')
+            .insert({ goal_id: goalId })
             .into('goal_logs')
             .returning('*')
             .then(res => res[0])
+    },
+    postRating(knex, logId, rating) {
+        return knex('goal_logs')
+            .update({ rating })
+            .where({ id: logId })
     },
     getAllUserLogs(knex, goalId) {
         return knex('goal_logs')
@@ -23,17 +32,23 @@ const LogsService = {
     },
     getWeeklyRatings(knex, goalId) {
         return knex('goal_logs')
-            .select(knex.raw(`date_trunc('week', date + interval '1 day') - interval '1 day' AS "Week" , sum(rating), count('*')`))
+            .select(knex.raw(`date_trunc('week', date + interval '1 day') - interval '1 day' AS "week" , sum(rating), count('*')`))
             .where('goal_id', goalId)
             .whereRaw(`date > now() + interval '1 day' - interval '12 months'`)
             .groupBy(1)
     },
     getDailyRatings(knex, goalId) {
         return knex('goal_logs')
-            .select(knex.raw(`date_trunc('day', date), rating`))
+            .select(knex.raw(`date_trunc('day', date) AS "day", rating`))
             .where('goal_id', goalId)
             .whereRaw(`date > now()- interval '1 month'`)
             .orderBy(1)
+    },
+    getGoalStats(knex, goalId) {
+        return knex('goal_logs')
+            .count('*')
+            .where('goal_id', goalId)
+            .then(res => res[0])
     }
 
 }
